@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'CookieShop' ">
+    <ExternalConsole>true</ExternalConsole>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.8" PrivateAssets="all" />
+    <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.1.2" />
+    <PackageReference Include="Blazored.Toast" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="5.0.8" />
+    <PackageReference Include="Blazored.Typeahead" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\CookieShop.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Services\" />
+    <None Remove="Services\ProductService\" />
+    <None Remove="Services\CategoryService\" />
+    <None Remove="Blazored.LocalStorage" />
+    <None Remove="Blazored.Toast" />
+    <None Remove="Services\CartService\" />
+    <None Remove="Microsoft.AspNetCore.Components.Authorization" />
+    <None Remove="Services\StatsService\" />
+    <None Remove="Blazored.Typeahead" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Services\ProductService\" />
+    <Folder Include="Services\CategoryService\" />
+    <Folder Include="Services\CartService\" />
+    <Folder Include="Services\StatsService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Pages\Counter.razor" />
+    <Content Remove="Pages\FetchData.razor" />
+    <Content Remove="Shared\SurveyPrompt.razor" />
+  </ItemGroup>
+</Project>

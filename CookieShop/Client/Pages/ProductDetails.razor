@@ -1,0 +1,99 @@
+﻿@page "/product/{id:int}"
+@inject IProductService ProductService
+@inject ICartService CartService
+@inject ILocalStorageService LocalStorage
+@inject IToastService ToastService
+
+<div class="views">
+    @product.Views.ToString("0##")
+</div>
+<div class="media">
+    <div class="media-img-big-wrapper mr-2">
+        <img class="media-img-big" src="@product.Image" alt="@product.Title" />
+    </div>
+    <div class="media-body">
+        <h2 class="mb-0">@product.Title</h2>
+        <p>@product.Description</p>
+        @if (product.Variants != null && product.Variants.Count > 0)
+        {
+            <div class="form-group">
+                <select class="form-control" @bind="currentEditionId">
+                    @foreach (var variant in product.Variants)
+                    {
+                        <option value="@variant.EditionId">@variant.Edition.Name</option>
+                    }
+                </select>
+            </div>
+        }
+        @if (GetSelectedVariant() != null)
+        {
+@if (GetSelectedVariant().OriginalPrice > GetSelectedVariant().Price)
+{
+<h6 class="text-muted original-price">$@GetSelectedVariant().OriginalPrice</h6>                }
+                <h4 class="price">
+                    $@GetSelectedVariant().Price
+                </h4>}
+        <EditForm Model="cartItem">
+            <div class="form-group">
+                <InputNumber id="quantity" @bind-Value="cartItem.Quantity" class="form-control" style ="width: 70px"/>
+            </div>
+        </EditForm>
+        <button class="btn btn-primary" @onclick="AddToCart"><i class="oi oi-cart"></i>&nbsp;&nbsp;&nbsp;Add to Cart</button>
+    </div>
+</div>
+
+
+
+@code {
+
+    private Product product = new Product();
+
+    private int currentEditionId = 1;
+
+    private CartItem cartItem = new CartItem { Quantity = 1 };
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        product = await ProductService.GetProduct(Id);
+        if (product.Variants.Count > 0)
+        {
+            currentEditionId = product.Variants[0].EditionId;
+        }
+
+    }
+
+    private ProductVariant GetSelectedVariant() {
+
+        var variant = product.Variants.FirstOrDefault(v => v.EditionId == currentEditionId);
+        return variant;
+    }
+
+    private async Task AddToCart()
+    {
+        var productVariant = GetSelectedVariant();
+
+        cartItem.EditionId = productVariant.EditionId;
+        cartItem.EditionName = productVariant.Edition.Name;
+        cartItem.Image = product.Image;
+        cartItem.Price = productVariant.Price;
+        cartItem.ProductId = productVariant.ProductId;
+        cartItem.ProductTitle = product.Title;
+
+        await CartService.AddToCart(cartItem);
+    }
+
+    private string GetViewString()
+    {
+        if (product.Views > 1000000)
+            return $"{((float)product.Views / 1000000).ToString("#.##")}M";
+        if (product.Views > 100000)
+            return $"{((float)product.Views / 1000).ToString("#")}K";
+        if (product.Views > 1000)
+            return $"{((float)product.Views / 1000).ToString("#.##")}K";
+
+        return product.Views.ToString("0##");
+    }
+}
